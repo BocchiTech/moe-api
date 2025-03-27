@@ -1,0 +1,33 @@
+name: Sync Fork with Upstream
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # This runs the action once a day at midnight UTC. Change the schedule as needed.
+  workflow_dispatch: # Allows for manual triggering of the workflow
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+
+      - name: Set up Git
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Add upstream repository
+        run: |
+          git remote add upstream https://github.com/SlavyanDesu/moe-api.git
+          git fetch upstream
+
+      - name: Merge changes from upstream
+        run: |
+          git checkout master
+          git merge upstream/master
+
+      - name: Push changes to fork
+        run: |
+          git push origin master
